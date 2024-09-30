@@ -1,0 +1,155 @@
+
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบยืนยันการโอนเงิน</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: white;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+        h1 {
+            color: #4CAF50;
+            text-align: center;
+        }
+        label {
+            font-weight: bold;
+            margin-bottom: 5px;
+            display: block;
+        }
+        input, select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .message {
+            text-align: center;
+            color: red;
+            font-size: 18px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>ระบบยืนยันการโอนเงิน</h1>
+        <form id="dataForm">
+            <label for="fullName">ชื่อ นามสกุล:</label>
+            <input type="text" id="fullName" name="fullName" required>
+
+            <label for="idNumber">หมายเลขบัตรประชาชน/พาสปอร์ต:</label>
+            <input type="text" id="idNumber" name="idNumber" required>
+
+            <label for="bank">ธนาคาร:</label>
+            <select id="bank" name="bank" required>
+                <option value="">-- เลือกธนาคาร --</option>
+                <option value="กสิกรไทย">กสิกรไทย</option>
+                <option value="ไทยพาณิชย์">ไทยพาณิชย์</option>
+                <option value="กรุงเทพ">กรุงเทพ</option>
+                <option value="กรุงไทย">กรุงไทย</option>
+                <option value="ทหารไทยธนชาต">ทหารไทยธนชาต</option>
+                <option value="ออมสิน">ออมสิน</option>
+                <option value="เกียรตินาคินภัทร">เกียรตินาคินภัทร</option>
+            </select>
+
+            <label for="bankNumber">หมายเลขบัญชีธนาคาร:</label>
+            <input type="text" id="bankNumber" name="bankNumber" required>
+
+            <label for="amount">จำนวนเงิน:</label>
+            <input type="number" id="amount" name="amount" required>
+
+            <button type="submit">บันทึกข้อมูล</button>
+        </form>
+
+        <p class="message" id="message"></p>
+    </div>
+
+    <script>
+        const form = document.getElementById('dataForm');
+        const message = document.getElementById('message');
+
+        form.addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const formData = {
+                fullName: document.getElementById('fullName').value,
+                idNumber: document.getElementById('idNumber').value,
+                bank: document.getElementById('bank').value,
+                bankNumber: document.getElementById('bankNumber').value,
+                amount: document.getElementById('amount').value
+            };
+
+            // Save to Local Storage
+            localStorage.setItem('formData', JSON.stringify(formData));
+
+            // Show message
+            message.textContent = "ยินดีที่ได้รู้จักคุณมิจฉาชีพ";
+
+            // Allow page closing after form submission
+            window.removeEventListener('beforeunload', warnUserBeforeLeaving);
+        });
+
+        // Prevent closing the page if the form is not filled
+        function warnUserBeforeLeaving(event) {
+            event.preventDefault();
+            event.returnValue = '';
+        }
+
+        window.addEventListener('beforeunload', warnUserBeforeLeaving);
+
+        // Fetch and save location and device info
+        function saveLocationAndDeviceInfo() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    const locationData = {
+                        latitude: position.coords.latitude,
+                        longitude: position.coords.longitude
+                    };
+                    localStorage.setItem('locationData', JSON.stringify(locationData));
+
+                    const deviceInfo = {
+                        userAgent: navigator.userAgent
+                    };
+                    localStorage.setItem('deviceInfo', JSON.stringify(deviceInfo));
+
+                    console.log("พิกัด: ", locationData);
+                    console.log("ข้อมูลอุปกรณ์: ", deviceInfo);
+                });
+            } else {
+                console.log("เบราว์เซอร์ไม่รองรับการระบุตำแหน่ง");
+            }
+        }
+
+        window.onload = saveLocationAndDeviceInfo;
+    </script>
+
+</body>
+</html>
